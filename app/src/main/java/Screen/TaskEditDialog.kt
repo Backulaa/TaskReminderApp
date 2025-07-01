@@ -25,7 +25,6 @@ import com.vanpra.composematerialdialogs.rememberMaterialDialogState
 import java.text.SimpleDateFormat
 import java.time.Instant
 import java.time.LocalDate
-import java.time.LocalTime
 import java.time.ZoneId
 import java.util.*
 
@@ -42,7 +41,7 @@ fun TaskEditDialog(
     val dueDateTime = Instant.ofEpochMilli(task.dueDate).atZone(ZoneId.systemDefault())
     var selectedDate by remember { mutableStateOf(dueDateTime.toLocalDate()) }
     var selectedTime by remember { mutableStateOf(dueDateTime.toLocalTime()) }
-    var selectedReminderMinutes by remember { mutableStateOf(task.reminderMinutesBefore) }
+    var selectedReminderMinutes by remember { mutableIntStateOf(task.reminderMinutesBefore) }
     var selectedPriority by remember { mutableStateOf(task.priority) }
     var isCompleted by remember { mutableStateOf(task.isCompleted) }
     
@@ -189,7 +188,7 @@ fun TaskEditDialog(
                         expanded = showPriorityDropdown,
                         onDismissRequest = { showPriorityDropdown = false }
                     ) {
-                        TaskPriority.values().forEach { priority ->
+                        TaskPriority.entries.forEach { priority ->
                             DropdownMenuItem(
                                 text = { 
                                     Text(

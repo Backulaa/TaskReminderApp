@@ -100,9 +100,9 @@ class AuthViewModel @Inject constructor(
 }
 
 sealed class AuthState {
-    object Idle : AuthState()
-    object Loading : AuthState()
-    object SignedOut : AuthState()
+    data object Idle : AuthState()
+    data object Loading : AuthState()
+    data object SignedOut : AuthState()
     data class Success(val message: String) : AuthState()
     data class Error(val message: String) : AuthState()
 }

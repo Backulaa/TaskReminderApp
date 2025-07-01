@@ -56,9 +56,7 @@ class UserRepository(private val userDao: UserDao) {
         return withContext(Dispatchers.IO) {
             try {
                 val user = userDao.getUserByEmailSync(email)
-                if (user == null) {
-                    return@withContext Result.failure(Exception("User not found"))
-                }
+                    ?: return@withContext Result.failure(Exception("User not found"))
 
                 val hashedPassword = hashPassword(password)
                 if (user.password == hashedPassword) {

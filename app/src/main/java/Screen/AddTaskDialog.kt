@@ -1,12 +1,7 @@
 package Screen
 
-import Data.Task
 import Data.TaskPriority
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccessTime
 import androidx.compose.material.icons.filled.DateRange
@@ -40,7 +35,7 @@ fun AddTaskDialog(
     var taskName by remember { mutableStateOf("") }
     var selectedDate by remember { mutableStateOf(LocalDate.now()) }
     var selectedTime by remember { mutableStateOf(LocalTime.now().plusHours(1)) }
-    var selectedReminderMinutes by remember { mutableStateOf(60) } // Default 1 hour
+    var selectedReminderMinutes by remember { mutableIntStateOf(60) } // Default 1 hour
     var selectedPriority by remember { mutableStateOf(TaskPriority.NORMAL) }
     var showReminderDropdown by remember { mutableStateOf(false) }
     var showPriorityDropdown by remember { mutableStateOf(false) }
@@ -168,7 +163,7 @@ fun AddTaskDialog(
                         expanded = showPriorityDropdown,
                         onDismissRequest = { showPriorityDropdown = false }
                     ) {
-                        TaskPriority.values().forEach { priority ->
+                        TaskPriority.entries.forEach { priority ->
                             DropdownMenuItem(
                                 text = { 
                                     Text(

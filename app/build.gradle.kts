@@ -47,26 +47,16 @@ android {
     }
 }
 
-ksp {
-    arg("room.schemaLocation", "$projectDir/schemas")
-}
-
 dependencies {
-
+    // Core Android dependencies
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
     implementation(libs.androidx.activity)
     implementation(libs.androidx.constraintlayout)
     implementation(libs.androidx.navigation.compose)
-    implementation(libs.androidx.espresso.core)
-    implementation(libs.androidx.security.crypto.ktx)
-    implementation (libs.androidx.security.crypto)
-    implementation (libs.androidx.security.crypto.ktx.v110alpha06)
-    implementation(libs.support.annotations)
-    implementation(libs.androidx.runtime.livedata)
 
-
+    // Testing dependencies
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -76,7 +66,7 @@ dependencies {
     androidTestImplementation("androidx.test.ext:junit-ktx:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
 
-    // Dùng BOM để đồng bộ các thư viện Compose
+    // Jetpack Compose BOM and UI components
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.ui)
     implementation(libs.androidx.material3)
@@ -84,26 +74,20 @@ dependencies {
     implementation(libs.androidx.runtime)
     implementation(libs.androidx.ui.tooling.preview)
 
-    // Lifecycle
+    // Lifecycle and Activity Compose
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
 
-    // Debugging tools
+    // Debug tools for Compose
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 
-    // Material Icons
+    // Material Icons Extended (for search, filter icons)
     implementation(libs.androidx.material.icons.extended)
 
-    // Retrofit for API calls
-    implementation(libs.retrofit)
-    implementation(libs.converter.gson)
-
+    // Dependency Injection - Hilt
     implementation("com.google.dagger:hilt-android:2.51.1")
     ksp("com.google.dagger:hilt-android-compiler:2.51.1")
-
-    //Dagger - Hilt
-//    implementation("androidx.hilt:hilt-lifecycle-viewmodel:1.0.0-alpha03")
     ksp("androidx.hilt:hilt-compiler:1.2.0")
     implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.7")
@@ -111,55 +95,24 @@ dependencies {
     // Coroutines
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.9.0")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.9.0")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.9.0")
 
-    // Coroutine Lifecycle Scopes
+    // Lifecycle
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.7")
-    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.4.0")
 
-    implementation ("com.squareup.okhttp3:okhttp:4.10.0")
-    implementation ("com.squareup.okhttp3:logging-interceptor:4.10.0")
-
-
-    implementation ("io.github.vanpra.compose-material-dialogs:datetime:0.8.1-rc")
-
-    // Compose Charts
-    implementation(libs.compose.charts.v012)
-
-    // The compose calendar library for Android
-    coreLibraryDesugaring ("com.android.tools:desugar_jdk_libs:2.1.5")
-    implementation("com.kizitonwose.calendar:compose:2.6.2")
-
-    // Ocr
-    implementation (libs.text.recognition)
-    implementation(libs.jetbrains.kotlinx.coroutines.android)
-    implementation(libs.androidx.activity.ktx)
-    implementation(libs.jetbrains.kotlinx.coroutines.play.services)
-
-    // Chat
-    implementation (libs.microsoft.signalr)
-    implementation(libs.java.jwt)
-
-    // Display Avatar
-    implementation (libs.glide)
-    ksp (libs.compiler)
-
-    // Data Store Across Restart
-    implementation (libs.androidx.datastore.preferences)
-
-    // For showing customizable material-style dialogs in Jetpack Compose
+    // Date and Time Pickers (used in AddTask and EditTask dialogs)
     implementation(libs.core)
-
-    // Adds support for date and time pickers in the dialogs
     implementation(libs.compose.material.dialogs.datetime)
+
+    // Java 8+ desugaring for LocalDate/LocalTime support
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.5")
+
+    // Room Database
+    implementation("androidx.room:room-runtime:2.6.1")
+    implementation("androidx.room:room-ktx:2.6.1")
+    ksp("androidx.room:room-compiler:2.6.1")
 
     // Compose testing
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation("androidx.compose.ui:ui-test-junit4")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
-
-    // Room - Use consistent version
-    implementation("androidx.room:room-runtime:2.6.1")
-    implementation("androidx.room:room-ktx:2.6.1")
-    ksp("androidx.room:room-compiler:2.6.1")
 }
