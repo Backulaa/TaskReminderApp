@@ -10,6 +10,7 @@ import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
@@ -78,6 +79,7 @@ fun MainContent(
     when {
         currentUser != null -> {
             // User is authenticated, show main app
+            Log.d("MainActivity", "Showing TaskListScreen for user: ${currentUser!!.id}, ${currentUser!!.username}")
             NavHost(
                 navController = navController,
                 startDestination = "task_list_screen"

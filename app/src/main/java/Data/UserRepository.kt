@@ -35,7 +35,7 @@ class UserRepository(private val userDao: UserDao) {
 
                 // Hash password for security
                 val hashedPassword = hashPassword(password)
-                
+
                 // Create new user
                 val newUser = User(
                     username = username,
@@ -43,9 +43,15 @@ class UserRepository(private val userDao: UserDao) {
                     password = hashedPassword,
                     isLoggedIn = false
                 )
-                
-                userDao.insert(newUser)
-                Result.success(newUser)
+
+                // Insert user and get the generated ID
+                val userId = userDao.insert(newUser)
+
+                // Create user object with correct ID and mark as logged in
+                val loggedInUser = newUser.copy(id = userId.toInt(), isLoggedIn = true)
+                userDao.update(loggedInUser)
+
+                Result.success(loggedInUser)
             } catch (e: Exception) {
                 Result.failure(e)
             }

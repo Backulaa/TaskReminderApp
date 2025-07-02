@@ -1,5 +1,6 @@
 package Data
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -27,28 +28,33 @@ class AuthViewModel @Inject constructor(
     fun signUp(username: String, email: String, password: String) {
         viewModelScope.launch {
             _authState.value = AuthState.Loading
-            
+
             // Validation
             if (!isValidEmail(email)) {
                 _authState.value = AuthState.Error("Invalid email format")
                 return@launch
             }
-            
+
             if (password.length < 6) {
                 _authState.value = AuthState.Error("Password must be at least 6 characters")
                 return@launch
             }
-            
+
             if (username.isBlank()) {
                 _authState.value = AuthState.Error("Username cannot be empty")
                 return@launch
             }
 
+            Log.d("AuthViewModel", "Attempting to register user: $username, $email")
+
             val result = userRepository.registerUser(username, email, password)
             if (result.isSuccess) {
-                _currentUser.value = result.getOrNull()
+                val user = result.getOrNull()
+                Log.d("AuthViewModel", "User registered successfully: ${user?.id}, ${user?.username}")
+                _currentUser.value = user
                 _authState.value = AuthState.Success("Account created successfully!")
             } else {
+                Log.e("AuthViewModel", "Registration failed: ${result.exceptionOrNull()?.message}")
                 _authState.value = AuthState.Error(result.exceptionOrNull()?.message ?: "Registration failed")
             }
         }
@@ -57,7 +63,7 @@ class AuthViewModel @Inject constructor(
     fun signIn(email: String, password: String) {
         viewModelScope.launch {
             _authState.value = AuthState.Loading
-            
+
             if (email.isBlank() || password.isBlank()) {
                 _authState.value = AuthState.Error("Email and password cannot be empty")
                 return@launch

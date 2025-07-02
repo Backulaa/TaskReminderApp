@@ -1,5 +1,6 @@
 package Data
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -26,14 +27,17 @@ class TaskViewModel @Inject constructor(
 
     fun loadTasksForUser(userId: Int) {
         _currentUserId.value = userId
+        Log.d("TaskViewModel", "Loading tasks for user ID: $userId")
         viewModelScope.launch {
             _isLoading.value = true
             try {
                 // Since we can't use LiveData with StateFlow directly, we'll load tasks manually
                 // In a real implementation, you might use Flow from Room
                 val userTasks = taskRepository.getTasksForUserSync(userId)
+                Log.d("TaskViewModel", "Loaded ${userTasks.size} tasks for user $userId")
                 _tasks.value = userTasks
             } catch (e: Exception) {
+                Log.e("TaskViewModel", "Error loading tasks for user $userId", e)
                 _tasks.value = emptyList()
             } finally {
                 _isLoading.value = false
@@ -43,6 +47,7 @@ class TaskViewModel @Inject constructor(
 
     fun addTask(taskName: String, dueDateTime: Long, reminderMinutes: Int = 60, priority: TaskPriority = TaskPriority.NORMAL) {
         val userId = _currentUserId.value ?: return
+        Log.d("TaskViewModel", "Adding task '$taskName' for user ID: $userId")
         viewModelScope.launch {
             try {
                 val newTask = Task(
@@ -54,8 +59,10 @@ class TaskViewModel @Inject constructor(
                     userId = userId
                 )
                 taskRepository.insert(newTask)
+                Log.d("TaskViewModel", "Successfully added task, reloading tasks for user $userId")
                 loadTasksForUser(userId) // Refresh the list
             } catch (e: Exception) {
+                Log.e("TaskViewModel", "Error adding task for user $userId", e)
                 // Handle error
             }
         }
@@ -65,9 +72,10 @@ class TaskViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 taskRepository.update(task)
+                Log.d("TaskViewModel", "Task updated: ${task.taskName}")
                 loadTasksForUser(task.userId) // Refresh the list
             } catch (e: Exception) {
-                // Handle error
+                Log.e("TaskViewModel", "Error updating task", e)
             }
         }
     }
@@ -76,9 +84,10 @@ class TaskViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 taskRepository.delete(task)
+                Log.d("TaskViewModel", "Task deleted: ${task.taskName}")
                 loadTasksForUser(task.userId) // Refresh the list
             } catch (e: Exception) {
-                // Handle error
+                Log.e("TaskViewModel", "Error deleting task", e)
             }
         }
     }
