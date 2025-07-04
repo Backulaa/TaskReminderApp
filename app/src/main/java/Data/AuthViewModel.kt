@@ -89,6 +89,94 @@ class AuthViewModel @Inject constructor(
         }
     }
 
+    fun updateProfile(user: User, newUsername: String) {
+        viewModelScope.launch {
+            _authState.value = AuthState.Loading
+
+            if (newUsername.isBlank()) {
+                _authState.value = AuthState.Error("Username cannot be empty")
+                return@launch
+            }
+
+            Log.d("AuthViewModel", "Updating profile for user: ${user.id}, new username: $newUsername")
+
+            // Try direct update method first
+            val result = userRepository.updateUserByIdDirect(user.id, newUsername)
+            if (result.isSuccess) {
+                val updatedUser = result.getOrNull()!!
+                // Refresh user data from database to ensure we have the latest data
+                val refreshedUser = userRepository.getUserById(user.id)
+                _currentUser.value = refreshedUser ?: updatedUser
+                _authState.value = AuthState.Success("Profile updated successfully!")
+                Log.d("AuthViewModel", "Profile updated successfully for user: ${user.id}, refreshed user: ${refreshedUser?.username}")
+            } else {
+                // Fall back to original method
+                Log.w("AuthViewModel", "Direct update failed, trying original method")
+                val fallbackResult = userRepository.updateProfile(user, newUsername)
+                if (fallbackResult.isSuccess) {
+                    val updatedUser = fallbackResult.getOrNull()!!
+                    val refreshedUser = userRepository.getUserById(user.id)
+                    _currentUser.value = refreshedUser ?: updatedUser
+                    _authState.value = AuthState.Success("Profile updated successfully!")
+                    Log.d("AuthViewModel", "Profile updated successfully for user: ${user.id}, refreshed user: ${refreshedUser?.username}")
+                } else {
+                    _authState.value = AuthState.Error(fallbackResult.exceptionOrNull()?.message ?: "Failed to update profile")
+                    Log.e("AuthViewModel", "Failed to update profile: ${fallbackResult.exceptionOrNull()?.message}")
+                }
+            }
+        }
+    }
+
+    fun changePassword(user: User, currentPassword: String, newPassword: String) {
+        viewModelScope.launch {
+            _authState.value = AuthState.Loading
+
+            if (currentPassword.isBlank()) {
+                _authState.value = AuthState.Error("Current password cannot be empty")
+                return@launch
+            }
+
+            if (newPassword.length < 6) {
+                _authState.value = AuthState.Error("New password must be at least 6 characters")
+                return@launch
+            }
+
+            Log.d("AuthViewModel", "Changing password for user: ${user.id}")
+
+            // Try direct password change method first
+            val result = userRepository.changePasswordDirect(user.id, currentPassword, newPassword)
+            if (result.isSuccess) {
+                val updatedUser = result.getOrNull()!!
+                // Refresh user data from database to ensure we have the latest data
+                val refreshedUser = userRepository.getUserById(user.id)
+                _currentUser.value = refreshedUser ?: updatedUser
+                _authState.value = AuthState.Success("Password changed successfully!")
+                Log.d("AuthViewModel", "Password changed successfully for user: ${user.id}")
+            } else {
+                // Fall back to original method
+                Log.w("AuthViewModel", "Direct password change failed, trying original method")
+                val fallbackResult = userRepository.changePassword(user, currentPassword, newPassword)
+                if (fallbackResult.isSuccess) {
+                    val updatedUser = fallbackResult.getOrNull()!!
+                    val refreshedUser = userRepository.getUserById(user.id)
+                    _currentUser.value = refreshedUser ?: updatedUser
+                    _authState.value = AuthState.Success("Password changed successfully!")
+                    Log.d("AuthViewModel", "Password changed successfully for user: ${user.id}")
+                } else {
+                    _authState.value = AuthState.Error(fallbackResult.exceptionOrNull()?.message ?: "Failed to change password")
+                    Log.e("AuthViewModel", "Failed to change password: ${fallbackResult.exceptionOrNull()?.message}")
+                }
+            }
+        }
+    }
+
+    fun ensureCurrentUser(user: User) {
+        if (_currentUser.value == null || _currentUser.value?.id != user.id) {
+            Log.d("AuthViewModel", "Ensuring current user is set: ${user.id}, ${user.username}")
+            _currentUser.value = user
+        }
+    }
+
     private fun checkLoginStatus() {
         viewModelScope.launch {
             // Check if user is already logged in (you can implement this in UserDao)
@@ -102,6 +190,28 @@ class AuthViewModel @Inject constructor(
 
     fun clearAuthState() {
         _authState.value = AuthState.Idle
+    }
+
+    fun refreshCurrentUser() {
+        viewModelScope.launch {
+            val currentUserValue = _currentUser.value
+            if (currentUserValue != null) {
+                val refreshedUser = userRepository.getUserById(currentUserValue.id)
+                if (refreshedUser != null) {
+                    _currentUser.value = refreshedUser
+                    Log.d("AuthViewModel", "Current user refreshed: ${refreshedUser.id}, ${refreshedUser.username}")
+                } else {
+                    Log.w("AuthViewModel", "Failed to refresh current user - user not found in database")
+                }
+            }
+        }
+    }
+
+    fun testDatabaseOperations(user: User) {
+        viewModelScope.launch {
+            val testResult = userRepository.testDatabaseOperations(user.id)
+            Log.d("AuthViewModel", "Database test result: $testResult")
+        }
     }
 }
 

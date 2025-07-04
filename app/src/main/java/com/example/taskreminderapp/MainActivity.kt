@@ -4,6 +4,8 @@ import Data.AuthState
 import Data.AuthViewModel
 import Screen.AuthFlow
 import Screen.TaskListScreen
+import Screen.UserProfileScreen
+import Screen.TaskFilteredListScreen
 import android.Manifest
 import android.app.AlarmManager
 import android.content.Context
@@ -89,6 +91,30 @@ fun MainContent(
                         userId = currentUser!!.id,
                         onSignOut = {
                             authViewModel.signOut()
+                        },
+                        onNavigateToProfile = {
+                            navController.navigate("profile_screen")
+                        }
+                    )
+                }
+                composable("profile_screen") {
+                    UserProfileScreen(
+                        user = currentUser!!,
+                        onNavigateBack = {
+                            navController.popBackStack()
+                        },
+                        onNavigateToTaskFilter = { filterType ->
+                            navController.navigate("task_filter_screen/$filterType")
+                        }
+                    )
+                }
+                composable("task_filter_screen/{filterType}") { backStackEntry ->
+                    val filterType = backStackEntry.arguments?.getString("filterType") ?: "all"
+                    TaskFilteredListScreen(
+                        userId = currentUser!!.id,
+                        filterType = filterType,
+                        onNavigateBack = {
+                            navController.popBackStack()
                         }
                     )
                 }

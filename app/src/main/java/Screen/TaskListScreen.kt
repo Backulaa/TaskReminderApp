@@ -18,6 +18,7 @@ import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.Clear
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -42,19 +43,20 @@ import java.util.*
 fun TaskListScreen(
     userId: Int,
     onSignOut: () -> Unit,
+    onNavigateToProfile: () -> Unit = {},
     taskViewModel: TaskViewModel = hiltViewModel()
 ) {
     val tasks by taskViewModel.tasks.collectAsState()
     val isLoading by taskViewModel.isLoading.collectAsState()
     var showAddTaskDialog by remember { mutableStateOf(false) }
     var selectedTask by remember { mutableStateOf<Task?>(null) }
-    
+
     // Search and filter states
     var showSearchDialog by remember { mutableStateOf(false) }
     var filterByDate by remember { mutableStateOf<Long?>(null) }
     var filterByPriority by remember { mutableStateOf<TaskPriority?>(null) }
     var filterByCompletion by remember { mutableStateOf<Boolean?>(null) }
-    
+
     // Filtered tasks
     val filteredTasks = remember(tasks, filterByDate, filterByPriority, filterByCompletion) {
         tasks.filter { task ->
@@ -64,19 +66,19 @@ fun TaskListScreen(
                 taskCalendar.time = taskDate
                 val taskDay = taskCalendar.get(Calendar.DAY_OF_YEAR)
                 val taskYear = taskCalendar.get(Calendar.YEAR)
-                
+
                 val filterDate = Date(filterDateMillis)
                 val filterCalendar = Calendar.getInstance()
                 filterCalendar.time = filterDate
                 val filterDay = filterCalendar.get(Calendar.DAY_OF_YEAR)
                 val filterYear = filterCalendar.get(Calendar.YEAR)
-                
+
                 taskDay == filterDay && taskYear == filterYear
             } ?: true
-            
+
             val priorityMatch = filterByPriority?.let { it == task.priority } ?: true
             val completionMatch = filterByCompletion?.let { it == task.isCompleted } ?: true
-            
+
             dateMatch && priorityMatch && completionMatch
         }
     }
@@ -126,8 +128,17 @@ fun TaskListScreen(
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
-                
+
                 Row {
+                    // Profile button
+                    IconButton(onClick = onNavigateToProfile) {
+                        Icon(
+                            imageVector = Icons.Default.Person,
+                            contentDescription = "Profile",
+                            tint = MaterialTheme.colorScheme.primary
+                        )
+                    }
+
                     // Search/Filter button
                     IconButton(onClick = { showSearchDialog = true }) {
                         Icon(
@@ -136,7 +147,7 @@ fun TaskListScreen(
                             tint = MaterialTheme.colorScheme.primary
                         )
                     }
-                    
+
                     // Sign out button
                     IconButton(onClick = onSignOut) {
                         Icon(
@@ -223,7 +234,7 @@ fun TaskListScreen(
             }
         )
     }
-    
+
     // Search/Filter Dialog
     if (showSearchDialog) {
         SearchFilterDialog(
@@ -258,7 +269,7 @@ fun TaskItem(
     formatTime: (Long) -> String
 ) {
     val isOverdue = !task.isCompleted && task.dueDate < System.currentTimeMillis()
-    
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -285,14 +296,14 @@ fun TaskItem(
                 modifier = Modifier.size(24.dp)
             ) {
                 Icon(
-                    imageVector = if (task.isCompleted) 
-                        Icons.Default.CheckCircle 
-                    else 
+                    imageVector = if (task.isCompleted)
+                        Icons.Default.CheckCircle
+                    else
                         Icons.Default.RadioButtonUnchecked,
                     contentDescription = if (task.isCompleted) "Mark as incomplete" else "Mark as complete",
-                    tint = if (task.isCompleted) 
-                        MaterialTheme.colorScheme.primary 
-                    else 
+                    tint = if (task.isCompleted)
+                        MaterialTheme.colorScheme.primary
+                    else
                         MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
@@ -312,13 +323,13 @@ fun TaskItem(
                         fontSize = 16.sp,
                         fontWeight = FontWeight.Medium,
                         textDecoration = if (task.isCompleted) TextDecoration.LineThrough else null,
-                        color = if (task.isCompleted) 
-                            MaterialTheme.colorScheme.onSurfaceVariant 
-                        else 
+                        color = if (task.isCompleted)
+                            MaterialTheme.colorScheme.onSurfaceVariant
+                        else
                             MaterialTheme.colorScheme.onSurface,
                         modifier = Modifier.weight(1f)
                     )
-                    
+
                     // Priority indicator
                     Card(
                         colors = CardDefaults.cardColors(
@@ -352,9 +363,9 @@ fun TaskItem(
                         }
                     }
                 }
-                
+
                 Spacer(modifier = Modifier.height(4.dp))
-                
+
                 Row(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
@@ -367,7 +378,7 @@ fun TaskItem(
                             else -> MaterialTheme.colorScheme.onSurfaceVariant
                         }
                     )
-                    
+
                     if (isOverdue) {
                         Spacer(modifier = Modifier.width(8.dp))
                         Text(
@@ -378,7 +389,7 @@ fun TaskItem(
                         )
                     }
                 }
-                
+
                 // Reminder info
                 Spacer(modifier = Modifier.height(2.dp))
                 Text(
@@ -429,18 +440,18 @@ fun SearchFilterDialog(
 ) {
     var showPriorityDropdown by remember { mutableStateOf(false) }
     var showCompletionDropdown by remember { mutableStateOf(false) }
-    
+
     val dateDialogState = rememberMaterialDialogState()
     var selectedDate by remember { mutableStateOf(LocalDate.now()) }
-    
+
     val dateFormatter = SimpleDateFormat("MMM dd, yyyy", Locale.getDefault())
-    
+
     val completionOptions = listOf(
         Pair(null, "All Tasks"),
         Pair(true, "Completed Tasks"),
         Pair(false, "Pending Tasks")
     )
-    
+
     Dialog(onDismissRequest = onDismiss) {
         Card(
             modifier = Modifier
@@ -465,7 +476,7 @@ fun SearchFilterDialog(
                         fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.primary
                     )
-                    
+
                     TextButton(onClick = onClearFilters) {
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
@@ -480,9 +491,9 @@ fun SearchFilterDialog(
                         }
                     }
                 }
-                
+
                 Spacer(modifier = Modifier.height(20.dp))
-                
+
                 // Date Filter
                 Text(
                     text = "Filter by Due Date",
@@ -490,9 +501,9 @@ fun SearchFilterDialog(
                     fontWeight = FontWeight.Medium,
                     modifier = Modifier.padding(bottom = 8.dp)
                 )
-                
+
                 OutlinedTextField(
-                    value = currentDateFilter?.let { 
+                    value = currentDateFilter?.let {
                         dateFormatter.format(Date(it))
                     } ?: "All dates",
                     onValueChange = { },
@@ -522,9 +533,9 @@ fun SearchFilterDialog(
                     },
                     modifier = Modifier.fillMaxWidth()
                 )
-                
+
                 Spacer(modifier = Modifier.height(16.dp))
-                
+
                 // Priority Filter
                 Text(
                     text = "Filter by Priority",
@@ -532,7 +543,7 @@ fun SearchFilterDialog(
                     fontWeight = FontWeight.Medium,
                     modifier = Modifier.padding(bottom = 8.dp)
                 )
-                
+
                 ExposedDropdownMenuBox(
                     expanded = showPriorityDropdown,
                     onExpandedChange = { showPriorityDropdown = !showPriorityDropdown }
@@ -575,7 +586,7 @@ fun SearchFilterDialog(
                             } ?: MaterialTheme.colorScheme.onSurface
                         )
                     )
-                    
+
                     ExposedDropdownMenu(
                         expanded = showPriorityDropdown,
                         onDismissRequest = { showPriorityDropdown = false }
@@ -588,10 +599,10 @@ fun SearchFilterDialog(
                                 showPriorityDropdown = false
                             }
                         )
-                        
+
                         TaskPriority.entries.forEach { priority ->
                             DropdownMenuItem(
-                                text = { 
+                                text = {
                                     Text(
                                         priority.displayName,
                                         color = when (priority) {
@@ -599,7 +610,7 @@ fun SearchFilterDialog(
                                             TaskPriority.NORMAL -> Color(0xFFFF9800)
                                             TaskPriority.LOW -> Color.Green
                                         }
-                                    ) 
+                                    )
                                 },
                                 onClick = {
                                     onPriorityFilterChanged(priority)
@@ -609,9 +620,9 @@ fun SearchFilterDialog(
                         }
                     }
                 }
-                
+
                 Spacer(modifier = Modifier.height(16.dp))
-                
+
                 // Completion Status Filter
                 Text(
                     text = "Filter by Status",
@@ -619,7 +630,7 @@ fun SearchFilterDialog(
                     fontWeight = FontWeight.Medium,
                     modifier = Modifier.padding(bottom = 8.dp)
                 )
-                
+
                 ExposedDropdownMenuBox(
                     expanded = showCompletionDropdown,
                     onExpandedChange = { showCompletionDropdown = !showCompletionDropdown }
@@ -653,7 +664,7 @@ fun SearchFilterDialog(
                             .fillMaxWidth()
                             .menuAnchor(MenuAnchorType.PrimaryNotEditable)
                     )
-                    
+
                     ExposedDropdownMenu(
                         expanded = showCompletionDropdown,
                         onDismissRequest = { showCompletionDropdown = false }
@@ -669,9 +680,9 @@ fun SearchFilterDialog(
                         }
                     }
                 }
-                
+
                 Spacer(modifier = Modifier.height(24.dp))
-                
+
                 // Close Button
                 Button(
                     onClick = onDismiss,
@@ -682,7 +693,7 @@ fun SearchFilterDialog(
             }
         }
     }
-    
+
     // Date Picker Dialog
     MaterialDialog(
         dialogState = dateDialogState,

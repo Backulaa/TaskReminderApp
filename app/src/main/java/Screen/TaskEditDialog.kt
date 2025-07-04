@@ -37,17 +37,17 @@ fun TaskEditDialog(
     onDeleteTask: (Task) -> Unit
 ) {
     var taskName by remember { mutableStateOf(task.taskName) }
-    
+
     val dueDateTime = Instant.ofEpochMilli(task.dueDate).atZone(ZoneId.systemDefault())
     var selectedDate by remember { mutableStateOf(dueDateTime.toLocalDate()) }
     var selectedTime by remember { mutableStateOf(dueDateTime.toLocalTime()) }
     var selectedReminderMinutes by remember { mutableIntStateOf(task.reminderMinutesBefore) }
     var selectedPriority by remember { mutableStateOf(task.priority) }
     var isCompleted by remember { mutableStateOf(task.isCompleted) }
-    
+
     var showReminderDropdown by remember { mutableStateOf(false) }
     var showPriorityDropdown by remember { mutableStateOf(false) }
-    
+
     val dateDialogState = rememberMaterialDialogState()
     val timeDialogState = rememberMaterialDialogState()
     var showDeleteConfirmation by remember { mutableStateOf(false) }
@@ -89,7 +89,7 @@ fun TaskEditDialog(
                         fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.primary
                     )
-                    
+
                     IconButton(
                         onClick = { showDeleteConfirmation = true }
                     ) {
@@ -183,14 +183,14 @@ fun TaskEditDialog(
                             }
                         )
                     )
-                    
+
                     ExposedDropdownMenu(
                         expanded = showPriorityDropdown,
                         onDismissRequest = { showPriorityDropdown = false }
                     ) {
                         TaskPriority.entries.forEach { priority ->
                             DropdownMenuItem(
-                                text = { 
+                                text = {
                                     Text(
                                         priority.displayName,
                                         color = when (priority) {
@@ -198,7 +198,7 @@ fun TaskEditDialog(
                                             TaskPriority.NORMAL -> Color(0xFFFF9800)
                                             TaskPriority.LOW -> Color.Green
                                         }
-                                    ) 
+                                    )
                                 },
                                 onClick = {
                                     selectedPriority = priority
@@ -237,7 +237,7 @@ fun TaskEditDialog(
                             .fillMaxWidth()
                             .menuAnchor(MenuAnchorType.PrimaryNotEditable)
                     )
-                    
+
                     ExposedDropdownMenu(
                         expanded = showReminderDropdown,
                         onDismissRequest = { showReminderDropdown = false }
@@ -293,7 +293,7 @@ fun TaskEditDialog(
                                     .atZone(ZoneId.systemDefault())
                                     .toInstant()
                                     .toEpochMilli()
-                                
+
                                 val updatedTask = task.copy(
                                     taskName = taskName,
                                     dueDate = dueDateTime,

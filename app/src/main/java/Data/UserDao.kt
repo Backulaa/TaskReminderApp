@@ -25,4 +25,11 @@ interface UserDao {
 
     @Query("SELECT * FROM user_table WHERE is_logged_in = 1 LIMIT 1")
     suspend fun getLoggedInUser(): User?
+
+    // Direct SQL update methods for testing
+    @Query("UPDATE user_table SET username = :newUsername WHERE id = :userId")
+    suspend fun updateUsernameDirect(userId: Int, newUsername: String)
+
+    @Query("UPDATE user_table SET password = :newPassword WHERE id = :userId")
+    suspend fun updatePasswordDirect(userId: Int, newPassword: String)
 }
