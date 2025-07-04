@@ -19,6 +19,8 @@ TaskReminderApp is a comprehensive task management application that helps users 
     🔔 Smart Notifications - Automatic scheduling with custom timing
     
     🔍 Advanced Search & Filter - Filter by date, priority, and completion status
+
+    📊 Task Statistics Dashboard – Analytics view to track productivity patterns         through visual data
     
     📱 Modern UI - Beautiful Material Design 3 interface
     
@@ -55,7 +57,7 @@ TaskReminderApp is a comprehensive task management application that helps users 
       
 📱 Usage
 
-  Getting Started
+Getting Started
   
     1. Account Creation
       Launch the app
@@ -65,7 +67,8 @@ TaskReminderApp is a comprehensive task management application that helps users 
     2. Sign In
       Enter your email and password
       Tap "Sign In" to access your tasks
-    Managing Tasks
+      
+Managing Tasks
     
   ➕ Creating a New Task
   
@@ -110,6 +113,62 @@ TaskReminderApp is a comprehensive task management application that helps users 
       2 hours before - Planning time
       1 day before - Day-ahead notice
       2 days before - Early planning
+      
+Task Statistics Dashboard
+
+A comprehensive analytics view to help users track their productivity patterns.
+
+    👤 User Profile Information
+    
+        Username Display: Shows the current user's username.
+        
+        Email Display: Shows the user's registered email address.
+        
+        Clean Material 3 UI: Modern card-based design with proper spacing and                typography.
+    
+    📈 Interactive Analytics Cards
+    
+        Task Overview Card
+    
+            Total Tasks: Complete count of all user tasks.
+            
+            Completed Tasks: Number and percentage of completed tasks.
+            
+            Pending Tasks: Number of tasks still pending.
+            
+            Progress Bar: Visual completion progress indicator.
+    
+            Completion Percentage: Real-time calculation of task completion rate.
+    
+        Priority Distribution Card
+    
+            High Priority Tasks: Count and percentage of high priority tasks.
+            
+            Normal Priority Tasks: Count and percentage of normal priority tasks.
+            
+            Low Priority Tasks: Count and percentage of low priority tasks.
+            
+            Visual Progress Bars: Color-coded progress indicators for each priority             level.
+    
+            Color Coding:
+            
+                🔴 Red: High Priority
+                
+                🟠 Orange: Normal Priority
+                
+                🟢 Green: Low Priority
+    
+            Task Status Details Card
+    
+                Completed Tasks: Total completed task count.
+                
+                Pending Tasks: Total pending task count.
+                
+                Overdue Tasks: Tasks that have passed their due date.
+                
+                Recent Activity: Shows the 3 most recently completed tasks.
+                
+                Color-coded Status Indicators: Visual status representation.
       
 🖥️ System Requirements
 
